@@ -189,13 +189,20 @@ namespace L4D2辅助
                     Thread.Sleep(1); //在不按下空格时挂起防止CPU使用率过高
             }
         }
+
+        private Keys sk_key = Keys.Z;
+        private MouseButtons sk_btn;
         void SUKAN()
         {
             while (true)
             {
                 if (checkBox_SK.Checked)
                 {
-                    if (GetAsyncKeyState(Keys.X) < 0)
+                    if (GetAsyncKeyState(sk_key) < 0 
+                        || (sk_btn == MouseButtons.XButton1 && GetAsyncKeyState(Keys.XButton1) < 0)
+                        || (sk_btn == MouseButtons.XButton2 && GetAsyncKeyState(Keys.XButton2) < 0)
+                        || (sk_btn == MouseButtons.Middle && GetAsyncKeyState(Keys.MButton) < 0)
+                        )
                     {
                         mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
                         Thread.Sleep(10);
@@ -210,13 +217,21 @@ namespace L4D2辅助
                 Thread.Sleep(1);
             }
         }
+
+
+        private Keys ld_key = Keys.X;
+        private MouseButtons ld_btn;
         void LIANDIAN()
         {
             while (true)
             {
                 if (checkBox_LD.Checked)
                 {
-                    if (GetAsyncKeyState(Keys.T) < 0)
+                    if (GetAsyncKeyState(ld_key) < 0
+                        || (ld_btn == MouseButtons.XButton1 && GetAsyncKeyState(Keys.XButton1) < 0)
+                        || (ld_btn == MouseButtons.XButton2 && GetAsyncKeyState(Keys.XButton2) < 0)
+                        || (ld_btn == MouseButtons.Middle && GetAsyncKeyState(Keys.MButton) < 0)
+                        )
                     {
                         mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
                         Thread.Sleep(50);
@@ -229,58 +244,62 @@ namespace L4D2辅助
         }
 
 
+
         private void config_key_SK_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             config_key_SK.Text = "";
-            System.Text.StringBuilder messageBoxCS = new System.Text.StringBuilder();
-            messageBoxCS.AppendFormat("{0} = {1}", "Key", e.KeyCode.ToString());
-            messageBoxCS.AppendLine();
-            MessageBox.Show(messageBoxCS.ToString(), "Key Event");
+            sk_key = e.KeyCode;
+            sk_btn = MouseButtons.None;
+            //System.Text.StringBuilder messageBoxCS = new System.Text.StringBuilder();
+            //messageBoxCS.AppendFormat("{0} = {1}", "Key", e.KeyCode.ToString());
+            //messageBoxCS.AppendLine();
+            //MessageBox.Show(messageBoxCS.ToString(), "Key Event");
         }
 
         private void config_key_SK_Click(object sender, MouseEventArgs e)
         {
-            System.Text.StringBuilder messageBoxCS = new System.Text.StringBuilder();
-            messageBoxCS.AppendFormat("{0} = {1}", "Button", e.Button);
-            messageBoxCS.AppendLine();
-            messageBoxCS.AppendFormat("{0} = {1}", "Clicks", e.Clicks);
-            messageBoxCS.AppendLine();
-            messageBoxCS.AppendFormat("{0} = {1}", "X", e.X);
-            messageBoxCS.AppendLine();
-            messageBoxCS.AppendFormat("{0} = {1}", "Y", e.Y);
-            messageBoxCS.AppendLine();
-            messageBoxCS.AppendFormat("{0} = {1}", "Delta", e.Delta);
-            messageBoxCS.AppendLine();
-            messageBoxCS.AppendFormat("{0} = {1}", "Location", e.Location);
-            messageBoxCS.AppendLine();
-            MessageBox.Show(messageBoxCS.ToString(), "MouseClick Event");
+            config_key_SK.Text = "";
+            sk_btn = e.Button;
+            config_key_SK.Text = e.Button.ToString() + " Button";
+            sk_key = Keys.None;
+
+            //System.Console.WriteLine("Button: " + e.Button.ToString());
+            //System.Text.StringBuilder messageBoxCS = new System.Text.StringBuilder();
+            //messageBoxCS.AppendFormat("{0} = {1}", "Button", e.Button);
+            //messageBoxCS.AppendLine();
+            //messageBoxCS.AppendFormat("{0} = {1}", "Clicks", e.Clicks);
+            //messageBoxCS.AppendLine();
+            //messageBoxCS.AppendFormat("{0} = {1}", "X", e.X);
+            //messageBoxCS.AppendLine();
+            //messageBoxCS.AppendFormat("{0} = {1}", "Y", e.Y);
+            //messageBoxCS.AppendLine();
+            //messageBoxCS.AppendFormat("{0} = {1}", "Delta", e.Delta);
+            //messageBoxCS.AppendLine();
+            //messageBoxCS.AppendFormat("{0} = {1}", "Location", e.Location);
+            //messageBoxCS.AppendLine();
+            //MessageBox.Show(messageBoxCS.ToString(), "MouseClick Event");
         }
+
+
 
         private void config_key_LD_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             config_key_LD.Text = "";
-            System.Text.StringBuilder messageBoxCS = new System.Text.StringBuilder();
-            messageBoxCS.AppendFormat("{0} = {1}", "Key", e.KeyCode.ToString());
-            messageBoxCS.AppendLine();
-            MessageBox.Show(messageBoxCS.ToString(), "Key Event");
+            ld_key = e.KeyCode;
+            ld_btn = MouseButtons.None;
         }
 
         private void config_key_LD_Click(object sender, MouseEventArgs e)
         {
-            System.Text.StringBuilder messageBoxCS = new System.Text.StringBuilder();
-            messageBoxCS.AppendFormat("{0} = {1}", "Button", e.Button);
-            messageBoxCS.AppendLine();
-            messageBoxCS.AppendFormat("{0} = {1}", "Clicks", e.Clicks);
-            messageBoxCS.AppendLine();
-            messageBoxCS.AppendFormat("{0} = {1}", "X", e.X);
-            messageBoxCS.AppendLine();
-            messageBoxCS.AppendFormat("{0} = {1}", "Y", e.Y);
-            messageBoxCS.AppendLine();
-            messageBoxCS.AppendFormat("{0} = {1}", "Delta", e.Delta);
-            messageBoxCS.AppendLine();
-            messageBoxCS.AppendFormat("{0} = {1}", "Location", e.Location);
-            messageBoxCS.AppendLine();
-            MessageBox.Show(messageBoxCS.ToString(), "MouseClick Event");
+            config_key_LD.Text = "";
+            ld_btn = e.Button;
+            config_key_LD.Text = e.Button.ToString() + " Button";
+            ld_key = Keys.None;
+        }
+
+        private void bg_Click(object sender, MouseEventArgs e)
+        {
+            LT_spec_label.Focus();
         }
     }
 }

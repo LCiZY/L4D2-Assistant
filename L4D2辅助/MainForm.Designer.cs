@@ -126,7 +126,7 @@ namespace L4D2辅助
             this.config_key_SK.Name = "config_key_SK";
             this.config_key_SK.Size = new System.Drawing.Size(120, 28);
             this.config_key_SK.TabIndex = 12;
-            this.config_key_SK.Text = "点击配置按键";
+            this.config_key_SK.Text = "按住Z";
             this.config_key_SK.MouseDown += new System.Windows.Forms.MouseEventHandler(this.config_key_SK_Click);
             this.config_key_SK.KeyDown += new System.Windows.Forms.KeyEventHandler(this.config_key_SK_KeyDown);
             // 
@@ -136,13 +136,17 @@ namespace L4D2辅助
             this.config_key_LD.Name = "config_key_LD";
             this.config_key_LD.Size = new System.Drawing.Size(120, 28);
             this.config_key_LD.TabIndex = 13;
-            this.config_key_LD.Text = "点击配置按键";
+            this.config_key_LD.Text = "按住X";
             this.config_key_LD.MouseDown += new System.Windows.Forms.MouseEventHandler(this.config_key_LD_Click);
             this.config_key_LD.KeyDown += new System.Windows.Forms.KeyEventHandler(this.config_key_LD_KeyDown);
             // 
             // LT_spec_label
             // 
             this.LT_spec_label.AutoSize = true;
+            this.LT_spec_label.BackColor = System.Drawing.Color.Transparent;
+            this.LT_spec_label.Font = new System.Drawing.Font("Comic Sans MS", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LT_spec_label.ForeColor = System.Drawing.Color.Black;
+            this.LT_spec_label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.LT_spec_label.Location = new System.Drawing.Point(57, 74);
             this.LT_spec_label.Name = "LT_spec_label";
             this.LT_spec_label.Size = new System.Drawing.Size(80, 18);
@@ -155,6 +159,7 @@ namespace L4D2辅助
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bg_Click);
             this.ClientSize = new System.Drawing.Size(576, 329);
             this.Controls.Add(this.LT_spec_label);
             this.Controls.Add(this.config_key_LD);

@@ -39,22 +39,24 @@ namespace L4D2辅助
         //模拟鼠标滚轮滚动操作，必须配合dwData参数
         const int MOUSEEVENTF_WHEEL = 0x0800;
 
+        readonly string GAME_NAME = "left4dead2";
+
         string JUMP = "";//内存位置，形如 client.dll+0x756DF0
         string AIR = "";//内存位置，形如 client.dll+0x6E0008
 
         public MainForm()
         {
-            LoadAddress();
+            LoadConfiguration();
             InitializeComponent();
         }
 
-        private void LoadAddress()
+        private void LoadConfiguration()
         {
-            var path = @"./address.ini";
+            var path = @"./config.ini";
 
             if (!File.Exists(path)){  // 文件不存在，写入规则
                 var file = File.Create(path);
-                var content = "###地址值配置文件###\r\n###只在版本更新时需要更改配置文件的内容(每次版本更新游戏程序的地址值会变)\r\n###得到并修改以下两个十六进制地址值（地址值通过CE得到，方法如下：\r\n###JUMP: 这个地址内储存的值的特征是：初始值是4，在游戏的控制台输入+jump变成5，输入-jump变成4，跳的时候会在4和5之间变化\r\n###AIR：这个地址内储存的值特征是：初始是0（不跳跃的时候）。跳跃在空中时增大（一个大数），落地又变成0，走路的时候不会变。）\r\n\r\nJUMP=client.dll+0x757DF0\r\nAIR=client.dll+0x6E1008";
+                var content = "###地址值配置文件###\r\n###只在版本更新时需要更改配置文件的内容(每次版本更新游戏程序的地址值会变)\r\n###得到并修改以下两个十六进制地址值（地址值通过CE得到，方法如下：\r\n###JUMP: 这个地址内储存的值的特征是：初始值是4，在游戏的控制台输入+jump变成5，输入-jump变成4，跳的时候会在4和5之间变化\r\n###AIR：这个地址内储存的值特征是：初始是0（不跳跃的时候）。跳跃在空中时增大（一个大数），落地又变成0，走路的时候不会变。）\r\n\r\nJUMP=client.dll+0x757DF0\r\nAIR=client.dll+0x6E1008\r\n其余配置请不要手动更改";
                 var bytes = System.Text.Encoding.Default.GetBytes(content);
                 file.Write(bytes, 0, bytes.Length);
                 file.Close();
@@ -90,6 +92,8 @@ namespace L4D2辅助
             SK.Start();
             Thread LD = new Thread(LIANDIAN) { IsBackground = true };
             LD.Start();
+            Thread BG = new Thread(BGFunc) { IsBackground = true };
+            BG.Start();
         }
 
         private int left4dead2PID = 0;
@@ -97,7 +101,7 @@ namespace L4D2辅助
         {
             if (checkBox_LT.Checked)
             {
-                int PID = m.GetProcIdFromName("left4dead2");
+                int PID = m.GetProcIdFromName(GAME_NAME);
                 if (PID > 0)
                     m.OpenProcess(PID);
                 left4dead2PID = PID;
@@ -113,9 +117,26 @@ namespace L4D2辅助
             }
         }
 
-        int lastResult;
-        long groundTimeStamp;
-        long airTimeStamp;
+        void BGFunc()
+        {
+            while (true)
+            {
+                int PID = m.GetProcIdFromName(GAME_NAME);
+                if (PID <= 0 && left4dead2PID > 0)
+                {
+                    left4dead2PID = 0;
+                    Action<bool> AsyncUIDelegate1 = delegate (bool c) { checkBox_LT.Checked = c; };
+                    checkBox_LT.Invoke(AsyncUIDelegate1, new object[] { false });
+                    Action<bool> AsyncUIDelegate2 = delegate (bool c) { checkBox_SK.Checked = c; };
+                    checkBox_SK.Invoke(AsyncUIDelegate2, new object[] { false });
+                    Action<bool> AsyncUIDelegate3 = delegate (bool c) { checkBox_LD.Checked = c; };
+                    checkBox_LD.Invoke(AsyncUIDelegate3, new object[] { false });
+                }
+
+                Thread.Sleep(3000);
+            }
+        }
+
         void BHOP()
         {
             while (true)
@@ -155,13 +176,21 @@ namespace L4D2辅助
                     Thread.Sleep(1); //在不按下空格时挂起防止CPU使用率过高
             }
         }
+
+        private Keys sk_key = Keys.Z;
+        private MouseButtons sk_btn;
         void SUKAN()
         {
             while (true)
             {
                 if (checkBox_SK.Checked)
                 {
-                    if (GetAsyncKeyState(Keys.X) < 0)
+                    if (isActivate) continue;
+                    if (GetAsyncKeyState(sk_key) < 0 
+                        || (sk_btn == MouseButtons.XButton1 && GetAsyncKeyState(Keys.XButton1) < 0)
+                        || (sk_btn == MouseButtons.XButton2 && GetAsyncKeyState(Keys.XButton2) < 0)
+                        || (sk_btn == MouseButtons.Middle && GetAsyncKeyState(Keys.MButton) < 0)
+                        )
                     {
                         mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
                         Thread.Sleep(10);
@@ -176,13 +205,22 @@ namespace L4D2辅助
                 Thread.Sleep(1);
             }
         }
+
+
+        private Keys ld_key = Keys.X;
+        private MouseButtons ld_btn;
         void LIANDIAN()
         {
             while (true)
             {
                 if (checkBox_LD.Checked)
                 {
-                    if (GetAsyncKeyState(Keys.T) < 0)
+                    if (isActivate) continue;
+                    if (GetAsyncKeyState(ld_key) < 0
+                        || (ld_btn == MouseButtons.XButton1 && GetAsyncKeyState(Keys.XButton1) < 0)
+                        || (ld_btn == MouseButtons.XButton2 && GetAsyncKeyState(Keys.XButton2) < 0)
+                        || (ld_btn == MouseButtons.Middle && GetAsyncKeyState(Keys.MButton) < 0)
+                        )
                     {
                         mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
                         Thread.Sleep(50);
@@ -193,5 +231,78 @@ namespace L4D2辅助
                 Thread.Sleep(1);
             }
         }
+
+
+
+        private void config_key_SK_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            config_key_SK.Text = "";
+            sk_key = e.KeyCode;
+            sk_btn = MouseButtons.None;
+            //System.Text.StringBuilder messageBoxCS = new System.Text.StringBuilder();
+            //messageBoxCS.AppendFormat("{0} = {1}", "Key", e.KeyCode.ToString());
+            //messageBoxCS.AppendLine();
+            //MessageBox.Show(messageBoxCS.ToString(), "Key Event");
+        }
+
+        private void config_key_SK_Click(object sender, MouseEventArgs e)
+        {
+            config_key_SK.Text = "";
+            sk_btn = e.Button;
+            config_key_SK.Text = e.Button.ToString() + " Button";
+            sk_key = Keys.None;
+
+            //System.Console.WriteLine("Button: " + e.Button.ToString());
+            //System.Text.StringBuilder messageBoxCS = new System.Text.StringBuilder();
+            //messageBoxCS.AppendFormat("{0} = {1}", "Button", e.Button);
+            //messageBoxCS.AppendLine();
+            //messageBoxCS.AppendFormat("{0} = {1}", "Clicks", e.Clicks);
+            //messageBoxCS.AppendLine();
+            //messageBoxCS.AppendFormat("{0} = {1}", "X", e.X);
+            //messageBoxCS.AppendLine();
+            //messageBoxCS.AppendFormat("{0} = {1}", "Y", e.Y);
+            //messageBoxCS.AppendLine();
+            //messageBoxCS.AppendFormat("{0} = {1}", "Delta", e.Delta);
+            //messageBoxCS.AppendLine();
+            //messageBoxCS.AppendFormat("{0} = {1}", "Location", e.Location);
+            //messageBoxCS.AppendLine();
+            //MessageBox.Show(messageBoxCS.ToString(), "MouseClick Event");
+        }
+
+
+
+        private void config_key_LD_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            config_key_LD.Text = "";
+            ld_key = e.KeyCode;
+            ld_btn = MouseButtons.None;
+        }
+
+        private void config_key_LD_Click(object sender, MouseEventArgs e)
+        {
+            //System.Console.WriteLine("Button: " + e.Button.ToString());
+            config_key_LD.Text = "";
+            ld_btn = e.Button;
+            config_key_LD.Text = e.Button.ToString() + " Button";
+            ld_key = Keys.None;
+        }
+
+        private void bg_Click(object sender, MouseEventArgs e)
+        {
+            LT_spec_label.Focus();
+        }
+
+        bool isActivate = true;
+        private void Form_Activate(Object sender, EventArgs e)
+        {
+            isActivate = true;
+            //System.Console.WriteLine("Activate: ");
+        }
+        private void Form_Deactivate(Object sender, EventArgs e)
+        {
+            isActivate = false;
+            //System.Console.WriteLine("Deactivate: ");
+        }
+
     }
 }

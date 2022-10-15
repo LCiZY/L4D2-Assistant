@@ -56,7 +56,7 @@ namespace L4D2辅助
 
             if (!File.Exists(path)){  // 文件不存在，写入规则
                 var file = File.Create(path);
-                var content = "###地址值配置文件###\r\n###只在版本更新时需要更改配置文件的内容(每次版本更新游戏程序的地址值会变)\r\n###得到并修改以下两个十六进制地址值（地址值通过CE得到，方法如下：\r\n###JUMP: 这个地址内储存的值的特征是：初始值是4，在游戏的控制台输入+jump变成5，输入-jump变成4，跳的时候会在4和5之间变化\r\n###AIR：这个地址内储存的值特征是：初始是0（不跳跃的时候）。跳跃在空中时增大（一个大数），落地又变成0，走路的时候不会变。）\r\n\r\nJUMP=client.dll+0x757DF0\r\nAIR=client.dll+0x6E1008\r\n其余配置请不要手动更改";
+                var content = "###地址值配置文件###\r\n###只在版本更新时需要更改配置文件的内容(每次版本更新游戏程序的地址值会变)\r\n###得到并修改以下两个十六进制地址值（地址值通过CE得到，方法如下：\r\n###JUMP: 这个地址内储存的值的特征是：初始值是4，在游戏的控制台输入+jump变成5，输入-jump变成4，跳的时候会在4和5之间变化\r\n###AIR：这个地址内储存的值特征是：初始是0（不跳跃的时候）。跳跃在空中时增大（一个大数），落地又变成0，走路的时候不会变。）\r\n\r\nJUMP=client.dll+0x757DF0\r\nAIR=client.dll+0x6E1008\r\n###其余配置请不要手动更改";
                 var bytes = System.Text.Encoding.Default.GetBytes(content);
                 file.Write(bytes, 0, bytes.Length);
                 file.Close();
